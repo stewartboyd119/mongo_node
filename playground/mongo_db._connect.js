@@ -1,4 +1,5 @@
-const MongoClient = require('mongodb').MongoClient;
+const {MongoClient, ObjectId} = require('mongodb');
+
 MongoClient.connect('mongodb://localhost:27017', (err, client) => {
     if (err) {
         return console.log("Unable to connect to mongodb", err);
@@ -27,7 +28,7 @@ MongoClient.connect('mongodb://localhost:27017', (err, client) => {
         if (err) {
             return console.log("Error", err);
         }
-        console.log("Added record", res.ops);
+        console.log("Added record", res.ops[0]._id.getTimestamp());
     })
     client.close();
 })
