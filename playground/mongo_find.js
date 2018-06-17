@@ -9,9 +9,11 @@ MongoClient.connect(connectionString, (err, client) => {
         return console.log("Error connection", err);
     }
     var db = client.db(dbName);
-    var result = db.collection(todosCollection).find({}).toArray( (err, res) => {
-        if (err) return console.log("Error on find", err);
+    var result = db.collection(todosCollection).find({}).toArray().then((res) => {
         console.log(res);
+        client.close();
+    }, (err) => {
+        return console.log("Error on find", err);
         client.close();
     });
 })
