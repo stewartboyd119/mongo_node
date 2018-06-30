@@ -1,40 +1,27 @@
-const mongoose = require('mongoose');
-mongoose.Promise = global.Promise;
-
-var dburl = "mongodb://localhost:27017/TodoApp";
-mongoose.connect(dburl);
+const express = require('express');
+const bodyParser = require('body-parser');
+var {mongoose} = require('./db/mongoose');
+var {Todo} = require('./models/todo');
+var {User} = require('./models/user');
 console.log(global.Promise);
 
-var Todo = mongoose.model("Todo", {
-    text: {
-        type: String,
-        required: true,
-        minlength: 1,
-        trim: true
-    },
-    isCompleted: {
-        type: Boolean,
-        default: false
-    },
-    completedAt: {
-        type: Number,
-        default: null
-    }
+var app = express();
+
+//json() method returns a function
+app.use(bodyParser.json());
+app.post("/todos", (req, res) => {
+    console.log(req.body);
+    var todoNew = new Todo({
+        text: req.body.text
+    });
+    todoNew.save().then((doc) => {
+        res.send(doc);
+    }, (e) => {
+        res.status(400).send(e);
+    })
 });
 
-var User =   mongoose.model("User", {
-    email: {
-        type: String,
-        required: true,
-        minlength: 1,
-        trim: true
-    }
-})
+app.listen(3000, () => {
+    console.log("server started");
 
-var newTodo = new Todo({text: "    hello "});
-newTodo.save().then((res) => {console.log("success", res)}, 
-                    (reason) => {console.log("error", reason)});
-
-var newUser = new User({email: "stew123@hotmamil.com"});
-newUser.save().then((result) => console.log("success", result),
-                    (reason) => console.log("Error", reason));
+});
