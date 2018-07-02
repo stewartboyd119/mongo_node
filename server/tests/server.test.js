@@ -33,4 +33,21 @@ describe('POST /todos', () => {
             .catch((err) => done(err));  
         });
     });
+    it('does not create todo', (done) => {
+        const badfield = "badfield";
+        request(app)
+        .post('/todos')
+        .send({badfield})
+        .expect(400)
+        .end((err, res) => {
+            if (err) {
+                return done(err);
+            }
+            Todo.find().then((todos) => {
+                expect(todos.length).toBe(0);
+                done();
+            }, (err) => done(err))
+            .catch((reason) => done(reason));
+        });
+    })
 });
