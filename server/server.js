@@ -15,6 +15,7 @@ app.post("/todos", (req, res) => {
         text: req.body.text
     });
     todoNew.save().then((doc) => {
+        console.log(`doc=${doc}`);
         res.send(doc);
     }, (e) => {
         res.status(400).send(e);
@@ -25,3 +26,5 @@ app.listen(3000, () => {
     console.log("server started");
 
 });
+
+module.exports.app = app;
