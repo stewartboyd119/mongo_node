@@ -22,6 +22,11 @@ app.post("/todos", (req, res) => {
     })
 });
 
+app.get("/todos", (req, res) => {
+    Todo.find({}).then((docs) => res.send({docs}),
+        (err) => res.status(400).send(err));
+})
+
 app.listen(3000, () => {
     console.log("server started");
 
