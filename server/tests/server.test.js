@@ -71,13 +71,8 @@ describe("GET /todos", () => {
             if (err) {
                 return done(err);
             }
-            Todo.find().then((todos) => {
-                expect(todos.length).toBe(6);
-                done();
-            }
-                ,
-                (err) => done(err))
-                .catch((reason) => done(reason));
+            expect(res.body.docs.length).toBe(6);
+            done();
         });
     });
 });
