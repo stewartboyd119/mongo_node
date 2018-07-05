@@ -72,7 +72,6 @@ describe("GET /todos/:id", () => {
         .get(url)
         .expect(200)
         .expect((res) => {
-            console.log(res);
             expect(res.body.todo._id).toBe(seedTodos[0]._id.toHexString());
             expect(res.body.todo.text).toBe(seedTodos[0].text);
         })
@@ -92,6 +91,33 @@ describe("GET /todos/:id", () => {
     });
 });
 
+describe("DELETE /todos/:id", () => {
+    it("should return delete a todo", (done) => {
+        var url = `/todos/${seedTodos[0]._id.toHexString()}`;
+        console.log(url);
+        request(app)
+        .delete(url)
+        .expect(200)
+        .expect((res) => {
+            //console.log(res);
+            expect(res.body.todo._id).toBe(seedTodos[0]._id.toHexString());
+            expect(res.body.todo.text).toBe(seedTodos[0].text);
+        })
+        .end(done);
+    });
+    it("should return 404 when an invalid ID is given for deletion", (done) => {
+        request(app)
+        .delete(`/todos/123`)
+        .expect(404)
+        .end(done);
+    });
+    it("should return a 404 when a non existant ID is given for deletion", (done) => {
+        request(app)
+        .delete('/todos/1b3ac86c6d7d1e16678ece31')
+        .expect(404)
+        .end(done);
+    });
+});
 describe("GET /todos", () => {
     it("Get all docs", (done) => {
         request(app)
