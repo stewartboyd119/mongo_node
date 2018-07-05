@@ -65,7 +65,7 @@ describe('POST /todos', () => {
 
 
 describe("GET /todos/:id", () => {
-    it("Get a todo with a valid id", (done) => {
+    it("should return todo", (done) => {
         var url = `/todos/${seedTodos[0]._id.toHexString()}`;
         console.log(url);
         request(app)
@@ -78,13 +78,13 @@ describe("GET /todos/:id", () => {
         })
         .end(done);
     });
-    it("Try to get a doc with an invalid ID", (done) => {
+    it("should return 404 when an invalid ID is given", (done) => {
         request(app)
         .get(`/todos/123`)
         .expect(404)
         .end(done);
     });
-    it("Try to get a doc with a valid id that doesnt exist", (done) => {
+    it("should return a 404 when a non existant ID is given", (done) => {
         request(app)
         .get('/todos/1b3ac86c6d7d1e16678ece31')
         .expect(404)
