@@ -46,6 +46,24 @@ app.get("/todos/:id", (req, res) => {
     ).catch((reason) => res.status(400).send(`Crazy error ${reason}`));
 })
 
+// DELETE /todos/:id
+app.delete("/todos/:id", (req, res) => {
+    var id = req.params.id;
+    if (!ObjectID.isValid(id)) {
+        return res.status(404).send();
+    }
+    console.log(id);
+    Todo.findByIdAndRemove(id).then(
+        (todo) => {
+            if (!todo) {
+                return res.status(404).send({});
+            }
+            res.send({todo})
+        },
+        (err) => res.status(400).send()
+    ).catch((reason) => res.status(400).send(`Crazy error on attempted delete ${reason}`));
+
+});
 app.listen(port, () => {
     console.log(`Started on port ${port}`);
 
