@@ -3,8 +3,10 @@ const request = require('supertest');
 const {app} = require('../server');
 const {Todo} = require('../models/todo');
 
+_id = "5b3ac86c6d7d1e16678ece31"
 const seedTodos = [
-    {text: "todo1"},
+    {text: "todo1",
+    _id: _id},
     {text: "todo2"},
     {text: "todo3"},
     {text: "todoj"},
@@ -61,6 +63,32 @@ describe('POST /todos', () => {
     });
 });
 
+
+describe("GET /todos/:id", () => {
+    it("Get a todo with a valid id", (done) => {
+        var url = `/todos/${_id}`;
+        console.log(url);
+        request(app)
+        .get(url)
+        .expect(200)
+        .expect((res) => {
+            expect(res.body.todo._id).toBe(_id);
+        })
+        .end(done);
+    });
+    it("Try to get a doc with an invalid ID", (done) => {
+        request(app)
+        .get(`/todos/123`)
+        .expect(404)
+        .end(done);
+    });
+    it("Try to get a doc with a valid id that doesnt exist", (done) => {
+        request(app)
+        .get('/todos/1b3ac86c6d7d1e16678ece31')
+        .expect(404)
+        .end(done);
+    });
+});
 
 describe("GET /todos", () => {
     it("Get all docs", (done) => {
