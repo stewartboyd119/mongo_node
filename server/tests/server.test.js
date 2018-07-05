@@ -2,11 +2,11 @@ const expect = require('expect');
 const request = require('supertest');
 const {app} = require('../server');
 const {Todo} = require('../models/todo');
+const {ObjectID} = require('mongodb');
 
-_id = "5b3ac86c6d7d1e16678ece31"
 const seedTodos = [
     {text: "todo1",
-    _id: _id},
+    _id: new ObjectID()},
     {text: "todo2"},
     {text: "todo3"},
     {text: "todoj"},
@@ -66,13 +66,15 @@ describe('POST /todos', () => {
 
 describe("GET /todos/:id", () => {
     it("Get a todo with a valid id", (done) => {
-        var url = `/todos/${_id}`;
+        var url = `/todos/${seedTodos[0]._id.toHexString()}`;
         console.log(url);
         request(app)
         .get(url)
         .expect(200)
         .expect((res) => {
-            expect(res.body.todo._id).toBe(_id);
+            console.log(res);
+            expect(res.body.todo._id).toBe(seedTodos[0]._id.toHexString());
+            expect(res.body.todo.text).toBe(seedTodos[0].text);
         })
         .end(done);
     });
