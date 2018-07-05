@@ -93,7 +93,8 @@ describe("GET /todos/:id", () => {
 
 describe("DELETE /todos/:id", () => {
     it("should return delete a todo", (done) => {
-        var url = `/todos/${seedTodos[0]._id.toHexString()}`;
+        var id = seedTodos[0]._id.toHexString();
+        var url = `/todos/${id}`;
         console.log(url);
         request(app)
         .delete(url)
@@ -103,7 +104,14 @@ describe("DELETE /todos/:id", () => {
             expect(res.body.todo._id).toBe(seedTodos[0]._id.toHexString());
             expect(res.body.todo.text).toBe(seedTodos[0].text);
         })
-        .end(done);
+        .end((err, res) => {
+            Todo.findById(id).then((todo) => {
+                expect(todo).toBeFalsy();
+                done();
+                },
+                (err) => done(err))
+                .catch((reason) => done(reason));
+        });
     });
     it("should return 404 when an invalid ID is given for deletion", (done) => {
         request(app)
