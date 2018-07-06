@@ -159,6 +159,8 @@ describe("PATCH /todos/:id", () => {
                expect(todo.completed).toBeFalsy();
                // shouldnt be set since completed was set to false
                expect(todo.completedAt).toBeFalsy();
+               console.log(todo.completedAt);
+
                done();
             })
             .catch((reason) => done(reason));
