@@ -6,7 +6,9 @@ const {ObjectID} = require('mongodb');
 
 const seedTodos = [
     {text: "todo1",
-    _id: new ObjectID()},
+    _id: new ObjectID(),
+    completed: true,
+    completedAt: 234},
     {text: "todo2"},
     {text: "todo3"},
     {text: "todoj"},
@@ -126,6 +128,44 @@ describe("DELETE /todos/:id", () => {
         .end(done);
     });
 });
+describe("PATCH /todos/:id", () => {
+
+    it("should update the todo", (done) => {
+        var body = {text: "hello world"};
+        var id = seedTodos[0]._id.toHexString();
+        request(app)
+        .patch(`/todos/${id}`)
+        .send(body)
+        .expect(200)
+        .end((err, res) => {
+            Todo.findById(id).then((todo) => {
+               expect(todo.text).toBe(body.text); 
+               done();
+            }, (err) => done(err))
+            .catch((reason) => done(reason));
+        })
+    });
+
+    it("should clear completed at when completed set to false", (done) => {
+        var body = {text: "hello world", completed: false};
+        var id = seedTodos[0]._id.toHexString();
+        request(app)
+        .patch(`/todos/${id}`)
+        .send(body)
+        .expect(200)
+        .end((err, res) => {
+            Todo.findById(id).then((todo) => {
+               expect(todo.text).toBe(body.text); 
+               expect(todo.completed).toBeFalsy();
+               // shouldnt be set since completed was set to false
+               expect(todo.completedAt).toBeFalsy();
+               done();
+            })
+            .catch((reason) => done(reason));
+        });
+    });
+});
+
 describe("GET /todos", () => {
     it("Get all docs", (done) => {
         request(app)
