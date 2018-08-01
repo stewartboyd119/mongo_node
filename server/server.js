@@ -30,6 +30,16 @@ app.get("/todos", (req, res) => {
         (err) => res.status(400).send(err));
 })
 
+// POST /users
+app.post("/users", (req, res) => {
+
+    var userNewFields = _.pick(req.body, ["email", "password", "token"]);
+    User.insertMany([userNewFields]).then((docs) => res.status(200).send(docs),
+        (reason) => {console.log(`reason ${reason}`);
+                     res.status(404).send({});})
+        .catch((err) => res.status(404).send({}));
+})
+
 // GET /todos/1232432432
 app.get("/todos/:id", (req, res) => {
     var id = req.params.id;

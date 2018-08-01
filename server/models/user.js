@@ -13,7 +13,7 @@ var User =   mongoose.model("User", {
         }
     },
     password: {
-        trype: String,
+        type: String,
         required: true,
         minlength: 6
     },
