@@ -35,10 +35,16 @@ app.post("/users", (req, res) => {
 
     var userNewFields = _.pick(req.body, ["email", "password"]);
     var user = new User(userNewFields);
-    user.save().then((u) => res.status.send(u), 
-        (reason) => {console.log(`reason ${reason}`);
-                     res.status(400).send(reason);})
-        .catch((err) => res.status(400).send(err));
+    user.save().then(() =>{ 
+        return user.generateAuthToken();
+    }, (reason) => {
+        console.log(`reason ${reason}`);
+        res.status(400).send(reason);
+    }).then((token) => {
+        res.header('x-auth', token).send(user);
+    }).catch((err) => {
+        res.status(400).send(err);
+    });
 })
 
 // GET /todos/1232432432
