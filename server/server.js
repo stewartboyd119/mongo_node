@@ -33,11 +33,12 @@ app.get("/todos", (req, res) => {
 // POST /users
 app.post("/users", (req, res) => {
 
-    var userNewFields = _.pick(req.body, ["email", "password", "token"]);
-    User.insertMany([userNewFields]).then((docs) => res.status(200).send(docs),
+    var userNewFields = _.pick(req.body, ["email", "password"]);
+    var user = new User(userNewFields);
+    user.save().then((u) => res.status.send(u), 
         (reason) => {console.log(`reason ${reason}`);
-                     res.status(404).send({});})
-        .catch((err) => res.status(404).send({}));
+                     res.status(400).send(reason);})
+        .catch((err) => res.status(400).send(err));
 })
 
 // GET /todos/1232432432
