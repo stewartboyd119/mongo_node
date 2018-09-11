@@ -2,6 +2,7 @@ const {mongoose} = require('../db/mongoose');
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const _ = require('lodash');
+const bcrpyt = require('bcryptjs');
 
 const secret = "abc123";
 
@@ -32,6 +33,21 @@ var UserSchema = new mongoose.Schema({
             required: true
         }
     }]
+});
+
+UserSchema.pre('save', function(next) {
+
+    var user = this;
+    if (user.isModified('password')) {
+        bcrpyt.genSalt(10, (error, salt) => {
+            bcrpyt.hash(user.password, salt, (e2, hashedPassword) => {
+                user.password = hashedPassword;
+                next();
+            });
+        });
+    } else {
+        next();
+    }
 });
 
 UserSchema.methods.toJSON = function() {
