@@ -6,6 +6,7 @@ const {ObjectID} = require('mongodb');
 var {mongoose} = require('./db/mongoose');
 var {Todo} = require('./models/todo');
 var {User} = require('./models/user');
+var {authenticate} = require('./middleware/authenticate');
 
 const port = process.env.PORT;
 var app = express();
@@ -45,6 +46,12 @@ app.post("/users", (req, res) => {
     }).catch((err) => {
         res.status(400).send(err);
     });
+})
+
+
+app.get("/users/me", authenticate, (req, res) => {
+    // req is modified to have user object in authenticate middleware
+    res.send(req.user);
 })
 
 // GET /todos/1232432432
