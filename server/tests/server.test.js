@@ -3,10 +3,11 @@ const request = require('supertest');
 const {app} = require('../server');
 const {Todo} = require('../models/todo');
 const {ObjectID} = require('mongodb');
-const {seedTodos, populateTodos} = require('./seed/seed')
+const {seedTodos, seedUsers, populateTodos, populateUsers} = require('./seed/seed')
 
 // empty mongo before each request
 beforeEach(populateTodos);
+beforeEach(populateUsers);
 describe('POST /todos', () => {
     it('should respond with json', (done) => {
         const text = "test2";
