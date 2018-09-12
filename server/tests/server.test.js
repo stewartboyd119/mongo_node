@@ -22,7 +22,7 @@ beforeEach((done) => {
     Todo.insertMany(seedTodos);
 });
 describe('POST /todos', () => {
-    it('respond with json', (done) => {
+    it('should respond with json', (done) => {
         const text = "test2";
         request(app)
         .post('/todos')
@@ -38,6 +38,12 @@ describe('POST /todos', () => {
             }
             Todo.find().then(
                 (todos) => {
+                    // console.log("test");
+                    // console.log(todos);
+                    // console.log("*****");
+                    // console.log(todos[0]);
+                    // console.log(todos[1]);
+                    // console.log(todos.length);
                     expect(todos[todos.length - 1].text).toBe(text);
                     expect(todos.length).toBe(7);
                     return done();
@@ -46,7 +52,8 @@ describe('POST /todos', () => {
             .catch((err) => done(err));  
         });
     });
-    it('does not create todo', (done) => {
+
+    it('should not create todo', (done) => {
         const badfield = "badfield";
         request(app)
         .post('/todos')
