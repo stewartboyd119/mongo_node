@@ -173,3 +173,30 @@ describe("GET /todos", () => {
         .end(done);
     });
 });
+
+describe("GET /users/me", () => {
+    it("should retrieve user info when a valid token is given", (done) => {
+        request(app)
+        .get('/users/me')
+        .set('x-auth', seedUsers[0].tokens[0].token)
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .expect((res) => {
+            expect(res.body).toEqual({
+                "_id": seedUsers[0]._id.toHexString(),
+                "email": seedUsers[0].email
+            })
+        })
+        .end(done);
+    });
+
+    it("should send 401 when an invalid token is given", (done) => {
+        const invalidToken = "123" + seedUsers[0].tokens[0].token;
+        request(app)
+        .get('/users/me')
+        .set('x-auth', invalidToken)
+        .expect(401)
+        .end(done);
+
+    });
+})
