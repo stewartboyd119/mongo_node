@@ -3,6 +3,7 @@ const _ = require('lodash');
 const express = require('express');
 const bodyParser = require('body-parser');
 const {ObjectID} = require('mongodb');
+const bcrpyt = require('bcryptjs');
 var {mongoose} = require('./db/mongoose');
 var {Todo} = require('./models/todo');
 var {User} = require('./models/user');
@@ -14,12 +15,10 @@ var app = express();
 //json() method returns a function
 app.use(bodyParser.json());
 app.post("/todos", (req, res) => {
-    console.log(req.body);
     var todoNew = new Todo({
         text: req.body.text
     });
     todoNew.save().then((doc) => {
-        console.log(`doc=${doc}`);
         res.send(doc);
     }, (e) => {
         res.status(400).send(e);
@@ -45,6 +44,19 @@ app.post("/users", (req, res) => {
     });
 })
 
+app.post("/users/login", (req, res) => {
+    var userNewFields = _.pick(req.body, ["email", "password"]);
+    var searchCriterion = {email: userNewFields.email};
+    User.findByCredentials(userNewFields.email, userNewFields.password).then((user) => {
+        user.generateAuthToken().then((token) => {
+            res.header('x-auth', token).send(user);
+        }).catch((err) => {
+            res.status(400).send(err);
+        });
+    }).catch((err) => {
+        res.status(400).send(err);
+    }) ;
+})
 
 app.get("/users/me", authenticate, (req, res) => {
     // req is modified to have user object in authenticate middleware
@@ -57,7 +69,6 @@ app.get("/todos/:id", (req, res) => {
     if (!ObjectID.isValid(id)) {
         return res.status(404).send();
     }
-    console.log(id);
     Todo.findById(id).then(
         (todo) => {
             if (!todo) {
@@ -95,7 +106,6 @@ app.delete("/todos/:id", (req, res) => {
     if (!ObjectID.isValid(id)) {
         return res.status(404).send();
     }
-    console.log(id);
     Todo.findByIdAndRemove(id).then(
         (todo) => {
             if (!todo) {
