@@ -3,24 +3,10 @@ const request = require('supertest');
 const {app} = require('../server');
 const {Todo} = require('../models/todo');
 const {ObjectID} = require('mongodb');
+const {seedTodos, populateTodos} = require('./seed/seed')
 
-const seedTodos = [
-    {text: "todo1",
-    _id: new ObjectID(),
-    completed: true,
-    completedAt: 234},
-    {text: "todo2"},
-    {text: "todo3"},
-    {text: "todoj"},
-    {text: "todo5"},
-    {text: "todo6"}
-] 
 // empty mongo before each request
-beforeEach((done) => {
-    Todo.remove({}).then((res) => done(),
-                         (err) => done(err));
-    Todo.insertMany(seedTodos);
-});
+beforeEach(populateTodos);
 describe('POST /todos', () => {
     it('should respond with json', (done) => {
         const text = "test2";
