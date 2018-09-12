@@ -88,17 +88,10 @@ UserSchema.statics.findByCredentials = function(email, password) {
     return User.findOne({email}).then((user) => {
         return new Promise((resolve, reject) => {
             bcrpyt.compare(password, user.password, (error, doesMatch) => {
-                if (error) {
-                    return reject();
-                }
                 if (doesMatch) {
-                    user.generateAuthToken().then((token) => {
-                        return resolve(user);
-                    }).catch((err) => {
-                        return reject();
-                    });
+                    resolve(user);
                 } else {
-                    return reject();
+                    reject();
                 }
             });
         });
