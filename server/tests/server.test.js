@@ -26,12 +26,6 @@ describe('POST /todos', () => {
             }
             Todo.find().then(
                 (todos) => {
-                    // console.log("test");
-                    // console.log(todos);
-                    // console.log("*****");
-                    // console.log(todos[0]);
-                    // console.log(todos[1]);
-                    // console.log(todos.length);
                     expect(todos[todos.length - 1].text).toBe(text);
                     expect(todos.length).toBe(7);
                     return done();
@@ -64,7 +58,6 @@ describe('POST /todos', () => {
 describe("GET /todos/:id", () => {
     it("should return todo", (done) => {
         var url = `/todos/${seedTodos[0]._id.toHexString()}`;
-        console.log(url);
         request(app)
         .get(url)
         .expect(200)
@@ -92,12 +85,10 @@ describe("DELETE /todos/:id", () => {
     it("should return delete a todo", (done) => {
         var id = seedTodos[0]._id.toHexString();
         var url = `/todos/${id}`;
-        console.log(url);
         request(app)
         .delete(url)
         .expect(200)
         .expect((res) => {
-            //console.log(res);
             expect(res.body.todo._id).toBe(seedTodos[0]._id.toHexString());
             expect(res.body.todo.text).toBe(seedTodos[0].text);
         })
@@ -154,8 +145,6 @@ describe("PATCH /todos/:id", () => {
                expect(todo.completed).toBeFalsy();
                // shouldnt be set since completed was set to false
                expect(todo.completedAt).toBeFalsy();
-               console.log(todo.completedAt);
-
                done();
             })
             .catch((reason) => done(reason));
@@ -202,6 +191,31 @@ describe("GET /users/me", () => {
     });
 })
 
+describe("POST /users/login", () => {
+    it("should get back user info when valid credentials are given", (done) => {
+        var email = seedUsers[0].email;
+        var password = seedUsers[0].password;
+        request(app)
+        .post('/users/login')
+        .send({email, password})
+        .expect(200)
+        .expect((res) => {
+            expect(res.headers['x-auth']).toBeTruthy();
+            expect(res.body._id).toBeTruthy();
+            expect(res.body.email).toEqual(email);
+        })
+        .end(done);
+    });
+    it("send a 400 when invalid user/password combo is given", (done) => {
+        var email = "fake@email.com";
+        var password = "dsfdsfds!";
+        request(app)
+        .post('/users/login')
+        .send({email, password})
+        .expect(400)
+        .end(done);
+    });
+})
 
 describe("POST /users", () => {
     it("should create a user", (done) => {
