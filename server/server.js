@@ -12,7 +12,6 @@ var {authenticate} = require('./middleware/authenticate');
 const port = process.env.PORT;
 var app = express();
 
-//json() method returns a function
 app.use(bodyParser.json());
 app.post("/todos", (req, res) => {
     var todoNew = new Todo({
@@ -28,7 +27,7 @@ app.post("/todos", (req, res) => {
 app.get("/todos", (req, res) => {
     Todo.find({}).then((docs) => res.send({docs}),
         (err) => res.status(400).send(err));
-})
+});
 
 // POST /users
 app.post("/users", (req, res) => {
@@ -42,7 +41,7 @@ app.post("/users", (req, res) => {
     }).catch((err) => {
         res.status(400).send(err);
     });
-})
+});
 
 app.post("/users/login", (req, res) => {
     var userNewFields = _.pick(req.body, ["email", "password"]);
@@ -56,12 +55,20 @@ app.post("/users/login", (req, res) => {
     }).catch((err) => {
         res.status(400).send(err);
     }) ;
-})
+});
+
+app.delete("/users/me/token", authenticate, (req, res) => {
+    req.user.removeToken(req.token).then(() => {
+        res.status(200).send();
+    }).catch((err) => {
+        res.status(400).send();
+    });
+});
 
 app.get("/users/me", authenticate, (req, res) => {
     // req is modified to have user object in authenticate middleware
     res.send(req.user);
-})
+});
 
 // GET /todos/1232432432
 app.get("/todos/:id", (req, res) => {
@@ -78,7 +85,7 @@ app.get("/todos/:id", (req, res) => {
         },
         (err) => res.status(400).send()
     ).catch((reason) => res.status(400).send(`Crazy error ${reason}`));
-})
+});
 
 app.patch("/todos/:id", (req, res) => {
     var id = req.params.id;
@@ -98,7 +105,7 @@ app.patch("/todos/:id", (req, res) => {
         }
         res.status(200).send({todo: newTodo});
     }, (err) => res.status(404).send());
-})
+});
 
 // DELETE /todos/:id
 app.delete("/todos/:id", (req, res) => {

@@ -66,6 +66,19 @@ UserSchema.methods.generateAuthToken = function() {
     });
 };
 
+UserSchema.methods.removeToken = function(token) {
+    var user = this;
+    // var access = "auth";
+    // var token = jwt.sign({_id: user._id.toHexString(), access}, secret).toString();
+    return user.update({
+        $pull: {
+            tokens: {
+                token: token
+            }
+        }
+    })
+};
+
 UserSchema.statics.findByToken = function(token) {
     var User = this;
     var decoded;
