@@ -193,8 +193,9 @@ describe("GET /users/me", () => {
 
 describe("POST /users/login", () => {
     it("should get back user info when valid credentials are given", (done) => {
-        var email = seedUsers[0].email;
-        var password = seedUsers[0].password;
+        var user = seedUsers[0];
+        var email = user.email;
+        var password = user.password;
         request(app)
         .post('/users/login')
         .send({email, password})
@@ -204,7 +205,39 @@ describe("POST /users/login", () => {
             expect(res.body._id).toBeTruthy();
             expect(res.body.email).toEqual(email);
         })
-        .end(done);
+        .end((err, res) => {
+            if (err) {
+                return done(err);
+            }
+            User.findById(user._id).then((u) => {
+                var hasMatch = false;
+                const part = {
+                    access: 'auth',
+                    token: res.headers['x-auth']
+                }
+                // console.log(u.tokens);
+                // console.log('***');
+                for (i = 0; i < u.tokens.length; i++) {
+                    var t = u.tokens[i];
+                    // console.log(t.token);
+                    // console.log(res.headers['x-auth']);
+                    // console.log(t.access);
+                    // console.log('auth');
+                    if (t.token === res.headers['x-auth'] && t.access === 'auth') {
+                        hasMatch = true;
+                        break;
+                    }
+                }
+                expect(hasMatch).toBeTruthy();
+                // expect(u.tokens).toContain({
+                //     access: 'auth',
+                //     token: res.headers['x-auth']
+                // });
+                done();
+            }).catch((err) => {
+                done(err);
+            })
+        });
     });
     it("send a 400 when invalid user/password combo is given", (done) => {
         var email = "fake@email.com";
