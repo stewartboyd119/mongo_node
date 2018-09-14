@@ -301,3 +301,23 @@ describe("POST /users", () => {
 
     })
 })
+
+describe("DELETE /users/login/token", () => {
+    it("should delete token", (done) => {
+        var user = seedUsers[0];
+        request(app)
+        .delete("/users/me/token")
+        .set('x-auth', user.tokens[0].token)
+        .send()
+        .expect(200)
+        .end((err) => {
+            User.findById(user._id).then((u) => {
+                // should be no tokens left
+                expect(u.tokens.length).toBe(0);
+                done();
+            }).catch((err, res) => {
+                done(err);
+            });
+        })
+    })
+})
